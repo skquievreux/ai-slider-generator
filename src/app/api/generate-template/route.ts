@@ -142,12 +142,12 @@ async function createTitleSlide(
   presentationId: string,
   branding: ExtractedBranding,
 ) {
-  // Create title slide with branding
+  // Create blank slide
   const requests = [
     {
       createSlide: {
         slideLayoutReference: {
-          predefinedLayout: "TITLE_AND_TWO_COLUMNS",
+          predefinedLayout: "BLANK",
         },
       },
     },
@@ -160,21 +160,41 @@ async function createTitleSlide(
 
   const slideId = response.data.replies![0].createSlide!.objectId!;
 
-  // Add title content
-  const contentRequests = [
+  // Create title text box with placeholder
+  const titleRequests = [
+    {
+      createShape: {
+        objectId: `title_${slideId}`,
+        shapeType: "TEXT_BOX",
+        elementProperties: {
+          pageObjectId: slideId,
+          size: {
+            width: { magnitude: 600, unit: "PT" },
+            height: { magnitude: 100, unit: "PT" },
+          },
+          transform: {
+            scaleX: 1,
+            scaleY: 1,
+            translateX: 50,
+            translateY: 100,
+            unit: "PT",
+          },
+        },
+      },
+    },
     {
       insertText: {
-        objectId: slideId,
-        text: branding.brandName,
+        objectId: `title_${slideId}`,
+        text: "{{TITLE}}",
         insertionIndex: 0,
       },
     },
     {
       updateTextStyle: {
-        objectId: slideId,
+        objectId: `title_${slideId}`,
         style: {
           fontSize: {
-            magnitude: 54,
+            magnitude: 44,
             unit: "PT",
           },
           foregroundColor: {
@@ -183,15 +203,16 @@ async function createTitleSlide(
             },
           },
           fontFamily: branding.fontFamily,
+          bold: true,
         },
-        fields: "fontSize,foregroundColor,fontFamily",
+        fields: "fontSize,foregroundColor,fontFamily,bold",
       },
     },
   ];
 
   await slides.presentations.batchUpdate({
     presentationId,
-    requestBody: { requests: contentRequests },
+    requestBody: { requests: titleRequests },
   });
 }
 
@@ -200,23 +221,151 @@ async function createContentSlides(
   presentationId: string,
   branding: ExtractedBranding,
 ) {
-  // Create sample content slides
-  const layouts = ["TITLE_AND_BODY", "TITLE_AND_TWO_COLUMNS", "BIG_NUMBER"];
+  // Create content slides with placeholder text
+  const slideConfigs = [
+    {
+      title: "{{SLIDE_TITLE_1}}",
+      content: "{{CONTENT_1}}\n\n{{CONTENT_1_DETAIL}}",
+      layout: "title_body"
+    },
+    {
+      title: "{{SLIDE_TITLE_2}}",
+      content: "{{CONTENT_2}}",
+      layout: "title_only"
+    },
+    {
+      title: "{{SLIDE_TITLE_3}}",
+      content: "{{CONTENT_3}}\n\n• {{POINT_1}}\n• {{POINT_2}}\n• {{POINT_3}}",
+      layout: "title_body"
+    }
+  ];
 
-  for (const layout of layouts) {
-    const requests = [
+  for (const config of slideConfigs) {
+    // Create blank slide
+    const slideRequests = [
       {
         createSlide: {
           slideLayoutReference: {
-            predefinedLayout: layout,
+            predefinedLayout: "BLANK",
           },
+        },
+      },
+    ];
+
+    const slideResponse = await slides.presentations.batchUpdate({
+      presentationId,
+      requestBody: { requests: slideRequests },
+    });
+
+    const slideId = slideResponse.data.replies![0].createSlide!.objectId!;
+
+    // Create title text box
+    const titleRequests = [
+      {
+        createShape: {
+          objectId: `title_${slideId}`,
+          shapeType: "TEXT_BOX",
+          elementProperties: {
+            pageObjectId: slideId,
+            size: {
+              width: { magnitude: 500, unit: "PT" },
+              height: { magnitude: 60, unit: "PT" },
+            },
+            transform: {
+              scaleX: 1,
+              scaleY: 1,
+              translateX: 50,
+              translateY: 50,
+              unit: "PT",
+            },
+          },
+        },
+      },
+      {
+        insertText: {
+          objectId: `title_${slideId}`,
+          text: config.title,
+          insertionIndex: 0,
+        },
+      },
+      {
+        updateTextStyle: {
+          objectId: `title_${slideId}`,
+          style: {
+            fontSize: {
+              magnitude: 32,
+              unit: "PT",
+            },
+            foregroundColor: {
+              opaqueColor: {
+                rgbColor: hexToRgb(branding.textColor),
+              },
+            },
+            fontFamily: branding.fontFamily,
+            bold: true,
+          },
+          fields: "fontSize,foregroundColor,fontFamily,bold",
+        },
+      },
+    ];
+
+    // Create content text box
+    const contentRequests = [
+      {
+        createShape: {
+          objectId: `content_${slideId}`,
+          shapeType: "TEXT_BOX",
+          elementProperties: {
+            pageObjectId: slideId,
+            size: {
+              width: { magnitude: 500, unit: "PT" },
+              height: { magnitude: 200, unit: "PT" },
+            },
+            transform: {
+              scaleX: 1,
+              scaleY: 1,
+              translateX: 50,
+              translateY: 120,
+              unit: "PT",
+            },
+          },
+        },
+      },
+      {
+        insertText: {
+          objectId: `content_${slideId}`,
+          text: config.content,
+          insertionIndex: 0,
+        },
+      },
+      {
+        updateTextStyle: {
+          objectId: `content_${slideId}`,
+          style: {
+            fontSize: {
+              magnitude: 18,
+              unit: "PT",
+            },
+            foregroundColor: {
+              opaqueColor: {
+                rgbColor: hexToRgb(branding.textColor),
+              },
+            },
+            fontFamily: branding.fontFamily,
+          },
+          fields: "fontSize,foregroundColor,fontFamily",
         },
       },
     ];
 
     await slides.presentations.batchUpdate({
       presentationId,
-      requestBody: { requests },
+      requestBody: { requests: titleRequests },
+    });
+
+    await slides.presentations.batchUpdate({
+      presentationId,
+      requestBody: { requests: contentRequests },
     });
   }
 }

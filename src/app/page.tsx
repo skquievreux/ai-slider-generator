@@ -19,7 +19,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           AI Slides Generator
           <span className="ml-4 text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">
-            v1.0.1
+            v1.0.2
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">

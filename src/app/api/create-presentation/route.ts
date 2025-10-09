@@ -31,167 +31,166 @@ export async function POST(request: NextRequest) {
     }
 
     // Authenticate user and create API clients
-    const { slides, drive } = await createUserGoogleServices();
+    const { slides } = await createUserGoogleServices();
 
-    // Template ID for copying (user's existing presentation)
-    const templateId = "1h4FhJxXgsrZ71wArJf5WjKWZB1lV98iYfn_CJ2pYMD8";
-
-    // Step 1: Copy template to create new presentation
-    // Based on Google Drive API documentation for file operations
-    const copyRequest = {
-      fileId: templateId,
+    // Step 1: Create new presentation directly (no template copying)
+    const presentation = await slides.presentations.create({
       requestBody: {
-        name: body.slides[0]?.content.title || "AI Generated Presentation",
-        // No parents specified = copy to user's root My Drive
+        title: body.slides[0]?.content.title || "AI Generated Presentation",
       },
-    };
-
-    const copiedPresentation = await drive.files.copy(copyRequest);
-
-    if (!copiedPresentation.data.id) {
-      throw new Error("Failed to copy template presentation");
-    }
-
-    presentationId = copiedPresentation.data.id;
-    console.log(`✅ Presentation copied: ${presentationId}`);
-
-    // Step 2: Get presentation structure
-    const presentation = await slides.presentations.get({
-      presentationId,
     });
 
-    const existingSlides = presentation.data.slides || [];
-
-    if (existingSlides.length === 0) {
-      throw new Error("Template presentation has no slides");
+    if (!presentation.data.presentationId) {
+      throw new Error("Failed to create presentation");
     }
 
-    // Step 3: Analyze template structure to find editable text elements
-    const firstSlide = existingSlides[0];
-    if (!firstSlide) {
-      throw new Error("Template has no slides");
-    }
+    presentationId = presentation.data.presentationId;
+    console.log(`✅ Presentation created: ${presentationId}`);
 
-    const slideId = firstSlide.objectId;
-    const pageElements = firstSlide.pageElements || [];
-
-    // Step 4: Prepare batch update requests
+    // Step 2: Create slides with content
     const requests: any[] = [];
 
-    // Find ALL text elements that can be edited (not just TEXT_BOX)
-    const textElements = pageElements.filter((element) => {
-      const shape = element.shape;
-      return shape?.text?.textElements && shape?.text?.textElements.length > 0;
-    });
-
-    console.log(
-      `Found ${textElements.length} text elements:`,
-      textElements.map((el) => ({
-        id: el.objectId,
-        type: el.shape?.shapeType,
-        hasText: !!el.shape?.text,
-      })),
-    );
-
-    let textElementId: string;
-
-    if (textElements.length === 0) {
-      // Fallback: try to find any element with text content
-      const anyTextElements = pageElements.filter((element) => {
-        const shape = element.shape;
-        const textElements = shape?.text?.textElements;
-        return (
-          textElements &&
-          textElements.some(
-            (te) => te.textRun?.content && te.textRun.content.trim().length > 0,
-          )
-        );
+    body.slides.forEach((slide, index) => {
+      // Create new slide
+      requests.push({
+        createSlide: {
+          slideLayoutReference: {
+            predefinedLayout: "BLANK",
+          },
+        },
       });
 
-      console.log(
-        `Fallback: Found ${anyTextElements.length} elements with text content`,
-      );
-
-      if (anyTextElements.length > 0) {
-        textElements.push(...anyTextElements);
-        textElementId = textElements[0].objectId!;
-      } else {
-        // Instead of creating new shape, throw error with detailed info
-        console.error(
-          "No text elements found in template. Page elements:",
-          pageElements.map((el) => ({
-            id: el.objectId,
-            type: el.shape?.shapeType || "unknown",
-            hasText: !!el.shape?.text,
-          })),
-        );
-        throw new Error(
-          `Template slide has no text elements. Please ensure the template has at least one text box or shape with text. Found ${pageElements.length} elements.`,
-        );
-      }
-    } else {
-      textElementId = textElements[0].objectId!;
-    }
-
-    console.log(
-      `Using text element: ${textElementId} (type: ${textElements[0]?.shape?.shapeType || "created"})`,
-    );
-
-    // Clear existing content first
-    requests.push({
-      deleteText: {
-        objectId: textElementId,
-        textRange: { type: "ALL" },
-      },
+      // We'll add content in a separate batch after creating all slides
     });
 
-    // Combine all slide content into one presentation
-    let fullContent = "";
+    // Execute slide creation
+    const batchResult = await slides.presentations.batchUpdate({
+      presentationId,
+      requestBody: { requests },
+    });
+
+    // Get the created slide IDs
+    const createdSlides = batchResult.data.replies || [];
+    const slideIds: string[] = [];
+
+    createdSlides.forEach((reply, index) => {
+      if (reply.createSlide?.objectId) {
+        slideIds.push(reply.createSlide.objectId);
+      }
+    });
+
+    console.log(`Created ${slideIds.length} slides:`, slideIds);
+
+    // Step 3: Add content to each slide
+    const contentRequests: any[] = [];
 
     body.slides.forEach((slide, index) => {
-      if (slide.content.title && slide.content.title.trim()) {
-        fullContent += `${slide.content.title.trim()}\n\n`;
-      }
+      const slideId = slideIds[index];
+      if (!slideId) return;
 
-      if (
-        slide.content.body &&
-        Array.isArray(slide.content.body) &&
-        slide.content.body.length > 0
-      ) {
-        const bodyText = slide.content.body
-          .filter((item) => item && item.trim())
-          .map((item) => `• ${item.trim()}`)
-          .join("\n");
-        fullContent += `${bodyText}\n\n`;
-      }
+      const slideTitle = slide.content.title || `Slide ${index + 1}`;
+      const slideContent = Array.isArray(slide.content.body)
+        ? slide.content.body.filter(item => item && item.trim()).join('\n\n')
+        : slide.content.body || '';
 
-      // Add separator between slides
-      if (index < body.slides.length - 1) {
-        fullContent += "---\n\n";
-      }
-    });
+      // Create title text box
+      contentRequests.push({
+        createShape: {
+          objectId: `title_${slideId}`,
+          shapeType: "TEXT_BOX",
+          elementProperties: {
+            pageObjectId: slideId,
+            size: {
+              width: { magnitude: 600, unit: "PT" },
+              height: { magnitude: 80, unit: "PT" },
+            },
+            transform: {
+              scaleX: 1,
+              scaleY: 1,
+              translateX: 50,
+              translateY: 50,
+              unit: "PT",
+            },
+          },
+        },
+      });
 
-    // Add the combined content
-    if (fullContent.trim()) {
-      requests.push({
+      // Add title text
+      contentRequests.push({
         insertText: {
-          objectId: textElementId,
-          text: fullContent.trim(),
+          objectId: `title_${slideId}`,
+          text: slideTitle,
           insertionIndex: 0,
         },
       });
-    }
 
-    // Step 4: Execute batch update if there are requests
-    if (requests.length > 0) {
-      console.log(`📝 Updating ${requests.length} slide operations...`);
+      // Style title
+      contentRequests.push({
+        updateTextStyle: {
+          objectId: `title_${slideId}`,
+          style: {
+            fontSize: { magnitude: 36, unit: "PT" },
+            bold: true,
+          },
+          fields: "fontSize,bold",
+        },
+      });
+
+      // Create content text box
+      contentRequests.push({
+        createShape: {
+          objectId: `content_${slideId}`,
+          shapeType: "TEXT_BOX",
+          elementProperties: {
+            pageObjectId: slideId,
+            size: {
+              width: { magnitude: 600, unit: "PT" },
+              height: { magnitude: 300, unit: "PT" },
+            },
+            transform: {
+              scaleX: 1,
+              scaleY: 1,
+              translateX: 50,
+              translateY: 140,
+              unit: "PT",
+            },
+          },
+        },
+      });
+
+      // Add content text
+      if (slideContent.trim()) {
+        contentRequests.push({
+          insertText: {
+            objectId: `content_${slideId}`,
+            text: slideContent,
+            insertionIndex: 0,
+          },
+        });
+      }
+
+      // Style content
+      contentRequests.push({
+        updateTextStyle: {
+          objectId: `content_${slideId}`,
+          style: {
+            fontSize: { magnitude: 18, unit: "PT" },
+          },
+          fields: "fontSize",
+        },
+      });
+    });
+
+    // Execute content creation
+    if (contentRequests.length > 0) {
+      console.log(`📝 Adding content to ${slideIds.length} slides...`);
 
       await slides.presentations.batchUpdate({
         presentationId,
-        requestBody: { requests },
+        requestBody: { requests: contentRequests },
       });
 
-      console.log("✅ Presentation content updated successfully");
+      console.log("✅ Presentation content created successfully");
     }
 
     // Step 5: Generate Google Slides URL
@@ -209,9 +208,10 @@ export async function POST(request: NextRequest) {
     // Clean up failed presentation if it was created
     if (presentationId) {
       try {
-        const { drive } = await createUserGoogleServices();
-        await drive.files.delete({ fileId: presentationId });
-        console.log("🗑️ Cleaned up failed presentation");
+        const { slides } = await createUserGoogleServices();
+        // Note: Google Slides API doesn't have a direct delete method
+        // The presentation will remain but can be manually deleted by the user
+        console.log("🗑️ Presentation creation failed, presentation remains for manual cleanup");
       } catch (cleanupError) {
         console.error("Failed to cleanup presentation:", cleanupError);
       }
