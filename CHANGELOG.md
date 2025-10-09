@@ -5,23 +5,23 @@ Alle wichtigen Änderungen an AI Slides Generator werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.2] - 2025-10-09
+## [1.0.3] - 2025-10-09
 
 ### 🐛 Fixed
-- **Template System**: Templates werden jetzt mit Platzhalter-Text erstellt
-- **Presentation Creation**: Direkte Erstellung statt Template-Kopieren
-- **Text Elements**: Sicherstellung, dass Textelemente vorhanden sind
-- **Error Prevention**: Vermeidung von "no text elements" Fehlern
+- **Batch Update Order**: Requests werden jetzt in korrekter Reihenfolge ausgeführt
+- **Text Element Creation**: updateTextStyle nur bei vorhandenem Text
+- **Content Validation**: Content-Boxen nur bei vorhandenem Inhalt erstellen
+- **API Error Prevention**: Vermeidung von "object has no text" Fehlern
 
 ### 🔄 Changed
-- **Template Generation**: Erstellt jetzt explizite Text-Boxen mit Platzhaltern
-- **Presentation Creation**: Verwendet direkte API-Calls statt Template-Kopien
-- **Error Handling**: Besseres Debugging für Template-Probleme
+- **Request Batching**: Alle Presentation-Änderungen in einem batchUpdate
+- **Conditional Styling**: Text-Styling nur bei tatsächlich eingefügtem Text
+- **Content Creation**: Content-Elemente nur bei Bedarf erstellen
 
 ### 🏗️ Technical
-- **Google Slides API**: Optimierte Batch-Operationen
-- **Template Structure**: Klare Trennung von Titel und Inhalt
-- **Fallback Logic**: Robuste Fehlerbehandlung
+- **Google Slides API**: Korrekte Request-Sequenz (create → insert → style)
+- **Error Prevention**: Validierung vor API-Calls
+- **Batch Optimization**: Minimale API-Requests für bessere Performance
 
 ## [1.0.1] - 2025-10-09
 

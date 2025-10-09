@@ -47,30 +47,28 @@ export async function POST(request: NextRequest) {
     presentationId = presentation.data.presentationId;
     console.log(`✅ Presentation created: ${presentationId}`);
 
-    // Step 2: Create slides with content
-    const requests: any[] = [];
+    // Step 2: Create all slides and content in one batch
+    const allRequests: any[] = [];
 
     body.slides.forEach((slide, index) => {
       // Create new slide
-      requests.push({
+      allRequests.push({
         createSlide: {
           slideLayoutReference: {
             predefinedLayout: "BLANK",
           },
         },
       });
-
-      // We'll add content in a separate batch after creating all slides
     });
 
-    // Execute slide creation
-    const batchResult = await slides.presentations.batchUpdate({
+    // Execute slide creation first
+    const slideBatchResult = await slides.presentations.batchUpdate({
       presentationId,
-      requestBody: { requests },
+      requestBody: { requests: allRequests },
     });
 
     // Get the created slide IDs
-    const createdSlides = batchResult.data.replies || [];
+    const createdSlides = slideBatchResult.data.replies || [];
     const slideIds: string[] = [];
 
     createdSlides.forEach((reply, index) => {
@@ -81,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`Created ${slideIds.length} slides:`, slideIds);
 
-    // Step 3: Add content to each slide
+    // Step 3: Add content to each slide in one batch
     const contentRequests: any[] = [];
 
     body.slides.forEach((slide, index) => {
@@ -115,7 +113,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Add title text
+      // Add title text (always add text to title)
       contentRequests.push({
         insertText: {
           objectId: `title_${slideId}`,
@@ -136,30 +134,30 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Create content text box
-      contentRequests.push({
-        createShape: {
-          objectId: `content_${slideId}`,
-          shapeType: "TEXT_BOX",
-          elementProperties: {
-            pageObjectId: slideId,
-            size: {
-              width: { magnitude: 600, unit: "PT" },
-              height: { magnitude: 300, unit: "PT" },
-            },
-            transform: {
-              scaleX: 1,
-              scaleY: 1,
-              translateX: 50,
-              translateY: 140,
-              unit: "PT",
+      // Only create content text box if there's content
+      if (slideContent.trim()) {
+        contentRequests.push({
+          createShape: {
+            objectId: `content_${slideId}`,
+            shapeType: "TEXT_BOX",
+            elementProperties: {
+              pageObjectId: slideId,
+              size: {
+                width: { magnitude: 600, unit: "PT" },
+                height: { magnitude: 300, unit: "PT" },
+              },
+              transform: {
+                scaleX: 1,
+                scaleY: 1,
+                translateX: 50,
+                translateY: 140,
+                unit: "PT",
+              },
             },
           },
-        },
-      });
+        });
 
-      // Add content text
-      if (slideContent.trim()) {
+        // Add content text
         contentRequests.push({
           insertText: {
             objectId: `content_${slideId}`,
@@ -167,23 +165,23 @@ export async function POST(request: NextRequest) {
             insertionIndex: 0,
           },
         });
-      }
 
-      // Style content
-      contentRequests.push({
-        updateTextStyle: {
-          objectId: `content_${slideId}`,
-          style: {
-            fontSize: { magnitude: 18, unit: "PT" },
+        // Style content
+        contentRequests.push({
+          updateTextStyle: {
+            objectId: `content_${slideId}`,
+            style: {
+              fontSize: { magnitude: 18, unit: "PT" },
+            },
+            fields: "fontSize",
           },
-          fields: "fontSize",
-        },
-      });
+        });
+      }
     });
 
-    // Execute content creation
+    // Execute all content creation in one batch
     if (contentRequests.length > 0) {
-      console.log(`📝 Adding content to ${slideIds.length} slides...`);
+      console.log(`📝 Adding content to ${slideIds.length} slides in one batch...`);
 
       await slides.presentations.batchUpdate({
         presentationId,
