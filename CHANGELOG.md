@@ -5,23 +5,22 @@ Alle wichtigen Änderungen an AI Slides Generator werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.3] - 2025-10-09
+## [1.0.4] - 2025-10-09
 
-### 🐛 Fixed
-- **Batch Update Order**: Requests werden jetzt in korrekter Reihenfolge ausgeführt
-- **Text Element Creation**: updateTextStyle nur bei vorhandenem Text
-- **Content Validation**: Content-Boxen nur bei vorhandenem Inhalt erstellen
-- **API Error Prevention**: Vermeidung von "object has no text" Fehlern
+### ✨ Added
+- **Template System Integration**: Präsentationen verwenden jetzt ausgewählte Templates
+- **Placeholder Replacement**: Templates mit Platzhaltern werden durch echten Content ersetzt
+- **Template vs Blank Mode**: Automatische Erkennung von Template- oder Blank-Präsentationen
 
 ### 🔄 Changed
-- **Request Batching**: Alle Presentation-Änderungen in einem batchUpdate
-- **Conditional Styling**: Text-Styling nur bei tatsächlich eingefügtem Text
-- **Content Creation**: Content-Elemente nur bei Bedarf erstellen
+- **Presentation Creation**: Template-Kopien mit anschließender Content-Ersetzung
+- **Dual Mode Support**: Templates werden kopiert, Blank-Präsentationen werden erstellt
+- **Content Replacement**: Intelligente Platzhalter-Erkennung ({{TITLE}}, {{CONTENT}}, etc.)
 
 ### 🏗️ Technical
-- **Google Slides API**: Korrekte Request-Sequenz (create → insert → style)
-- **Error Prevention**: Validierung vor API-Calls
-- **Batch Optimization**: Minimale API-Requests für bessere Performance
+- **Template Processing**: replaceTemplatePlaceholders() für Template-basierte Präsentationen
+- **Fallback Creation**: createBlankPresentationContent() für Template-lose Präsentationen
+- **Content Mapping**: Automatische Zuordnung von Slides zu Template-Platzhaltern
 
 ## [1.0.1] - 2025-10-09
 
