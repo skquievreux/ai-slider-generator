@@ -79,12 +79,12 @@ Aktualisiere `src/app/api/templates/route.ts` mit echten Template-IDs:
 ```typescript
 const templates: TemplateConfig[] = [
   {
-    id: 'techeroes-modern-2025',
-    name: 'Techeroes Modern',
+    id: "techeroes-modern-2025",
+    name: "Techeroes Modern",
     // ... andere Konfiguration
-    googleSlidesTemplateId: '1ABC...XYZ' // Deine echte Template-ID
-  }
-]
+    googleSlidesTemplateId: "1ABC...XYZ", // Deine echte Template-ID
+  },
+];
 ```
 
 ## 🧪 Test der Integration
@@ -114,6 +114,7 @@ const templates: TemplateConfig[] = [
 ### Logs überprüfen:
 
 Die App loggt detaillierte Fehler. Schaue in der Konsole nach:
+
 - OpenAI Request/Response
 - Google API Calls
 - Template-IDs
@@ -121,6 +122,7 @@ Die App loggt detaillierte Fehler. Schaue in der Konsole nach:
 ## 📞 Support
 
 Bei Problemen:
+
 1. Überprüfe die Logs in der Browser-Konsole
 2. Stelle sicher, dass alle Environment Variables gesetzt sind
 3. Teste mit Google Cloud API Explorer
@@ -128,6 +130,7 @@ Bei Problemen:
 ## 🎯 Nächste Schritte
 
 Nach erfolgreichem Setup:
+
 - Template-System erweitern
 - Mehr Layouts hinzufügen
 - Performance optimieren

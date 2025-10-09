@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 export function LoadingIndicator() {
   return (
@@ -13,9 +13,12 @@ export function LoadingIndicator() {
 
       <div className="mt-4">
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+          <div
+            className="bg-primary h-2 rounded-full animate-pulse"
+            style={{ width: "60%" }}
+          ></div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -5,6 +5,7 @@ Basierend auf der `slide-template.md` Konfiguration erstellen wir eine vollstän
 ## 🎨 **Template-Design: Techeroes Modern**
 
 ### **Farbschema:**
+
 - **Primary**: #00D9D9 (Türkis)
 - **Secondary**: #FF6B35 (Orange)
 - **Accent**: #7C3AED (Lila)
@@ -12,6 +13,7 @@ Basierend auf der `slide-template.md` Konfiguration erstellen wir eine vollstän
 - **Text**: #2D2D2D (Dunkelgrau)
 
 ### **Typography:**
+
 - **Heading**: Poppins (700)
 - **Body**: Inter (400)
 
@@ -224,6 +226,7 @@ Aktualisiere `src/app/api/templates/route.ts`:
 ## 🎯 **Qualitäts-Check**
 
 Bevor du die Template verwendest:
+
 - ✅ Alle Layouts erstellt
 - ✅ Farbschema korrekt
 - ✅ Fonts verfügbar
@@ -234,6 +237,7 @@ Bevor du die Template verwendest:
 ## 🚀 **Template verwenden**
 
 Nach der Einrichtung kann die App:
+
 - Neue Präsentationen aus der Template erstellen
 - Content automatisch einfügen
 - Als PDF/PPTX exportieren

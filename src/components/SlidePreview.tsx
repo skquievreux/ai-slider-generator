@@ -1,24 +1,26 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { usePresentationStore } from '@/lib/store'
-import { Slide } from '@/types'
+import { useState } from "react";
+import { usePresentationStore } from "@/lib/store";
+import { Slide } from "@/types";
 
 export function SlidePreview() {
-  const { generatedSlides } = usePresentationStore()
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
+  const { generatedSlides } = usePresentationStore();
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  if (generatedSlides.length === 0) return null
+  if (generatedSlides.length === 0) return null;
 
-  const currentSlide = generatedSlides[currentSlideIndex]
+  const currentSlide = generatedSlides[currentSlideIndex];
 
   const nextSlide = () => {
-    setCurrentSlideIndex((prev) => Math.min(prev + 1, generatedSlides.length - 1))
-  }
+    setCurrentSlideIndex((prev) =>
+      Math.min(prev + 1, generatedSlides.length - 1),
+    );
+  };
 
   const prevSlide = () => {
-    setCurrentSlideIndex((prev) => Math.max(prev - 1, 0))
-  }
+    setCurrentSlideIndex((prev) => Math.max(prev - 1, 0));
+  };
 
   const renderSlideContent = (slide: Slide) => {
     return (
@@ -52,8 +54,8 @@ export function SlidePreview() {
           </div>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -88,7 +90,7 @@ export function SlidePreview() {
                 key={index}
                 onClick={() => setCurrentSlideIndex(index)}
                 className={`w-3 h-3 rounded-full ${
-                  index === currentSlideIndex ? 'bg-primary' : 'bg-gray-300'
+                  index === currentSlideIndex ? "bg-primary" : "bg-gray-300"
                 }`}
               />
             ))}
@@ -104,5 +106,5 @@ export function SlidePreview() {
         </div>
       </div>
     </div>
-  )
+  );
 }

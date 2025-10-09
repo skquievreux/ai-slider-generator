@@ -1,38 +1,38 @@
-import { create } from 'zustand'
-import { PresentationFormData, Slide, ExportUrls } from '@/types'
+import { create } from "zustand";
+import { PresentationFormData, Slide, ExportUrls } from "@/types";
 
 interface PresentationState {
-  formData: PresentationFormData
-  generatedSlides: Slide[]
-  isGenerating: boolean
-  exportUrls: ExportUrls
+  formData: PresentationFormData;
+  generatedSlides: Slide[];
+  isGenerating: boolean;
+  exportUrls: ExportUrls;
 
   // Actions
-  setFormData: (data: Partial<PresentationFormData>) => void
-  setGeneratedSlides: (slides: Slide[]) => void
-  setIsGenerating: (generating: boolean) => void
-  setExportUrls: (urls: ExportUrls) => void
-  reset: () => void
+  setFormData: (data: Partial<PresentationFormData>) => void;
+  setGeneratedSlides: (slides: Slide[]) => void;
+  setIsGenerating: (generating: boolean) => void;
+  setExportUrls: (urls: ExportUrls) => void;
+  reset: () => void;
 }
 
 const initialState = {
   formData: {
-    topic: '',
+    topic: "",
     slideCount: 5,
-    style: 'business',
-    templateId: 'techeroes-modern-2025'
+    style: "business",
+    templateId: "techeroes-modern-2025",
   },
   generatedSlides: [],
   isGenerating: false,
-  exportUrls: {}
-}
+  exportUrls: {},
+};
 
 export const usePresentationStore = create<PresentationState>((set) => ({
   ...initialState,
 
   setFormData: (data) =>
     set((state) => ({
-      formData: { ...state.formData, ...data }
+      formData: { ...state.formData, ...data },
     })),
 
   setGeneratedSlides: (slides) => set({ generatedSlides: slides }),
@@ -41,5 +41,5 @@ export const usePresentationStore = create<PresentationState>((set) => ({
 
   setExportUrls: (urls) => set({ exportUrls: urls }),
 
-  reset: () => set(initialState)
-}))
+  reset: () => set(initialState),
+}));

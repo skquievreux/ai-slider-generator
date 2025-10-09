@@ -35,12 +35,14 @@ graph TD
 ### Website Analyzer
 
 **Verantwortlichkeiten:**
+
 - Website laden und rendern
 - DOM-Struktur analysieren
 - CSS-Styling extrahieren
 - Screenshots erstellen
 
 **Technologien:**
+
 - Playwright für Browser-Automation
 - Cheerio für DOM-Parsing
 - Puppeteer Screenshot API
@@ -48,18 +50,21 @@ graph TD
 ### Branding Extractor
 
 **Color Extraction:**
+
 - CSS Color Values analysieren
 - Häufigkeitsanalyse durchführen
 - Color Palette generieren
 - Kontrast-Verhältnisse berechnen
 
 **Font Detection:**
+
 - Google Fonts API Integration
 - CSS Font-Family Analyse
 - Fallback Font Detection
 - Font Stack Optimierung
 
 **Logo Extraction:**
+
 - Image Recognition für Logo-Elemente
 - SVG/PNG Logo Detection
 - Logo URL Extraktion
@@ -68,12 +73,14 @@ graph TD
 ### Template Generator
 
 **Google Slides Integration:**
+
 - Programmatische Präsentationserstellung
 - Theme Application
 - Layout Generation
 - Content Platzhalter
 
 **Layout Mapping:**
+
 - Website-Struktur zu Folien-Layouts
 - Responsive Design berücksichtigen
 - Brand-konsistente Styling
@@ -85,6 +92,7 @@ graph TD
 Analysiert eine Website und extrahiert Branding-Informationen.
 
 **Request:**
+
 ```json
 {
   "url": "https://example.com",
@@ -98,6 +106,7 @@ Analysiert eine Website und extrahiert Branding-Informationen.
 ```
 
 **Response:**
+
 ```json
 {
   "url": "https://example.com",
@@ -124,6 +133,7 @@ Analysiert eine Website und extrahiert Branding-Informationen.
 Erstellt ein Google Slides Template aus Website-Analyse.
 
 **Request:**
+
 ```json
 {
   "analysisId": "analysis_123",
@@ -133,6 +143,7 @@ Erstellt ein Google Slides Template aus Website-Analyse.
 ```
 
 **Response:**
+
 ```json
 {
   "templateId": "template_456",
@@ -148,23 +159,23 @@ Erstellt ein Google Slides Template aus Website-Analyse.
 ```typescript
 class WebsiteAnalyzer {
   async analyze(url: string): Promise<WebsiteAnalysis> {
-    const browser = await playwright.chromium.launch()
-    const page = await browser.newPage()
+    const browser = await playwright.chromium.launch();
+    const page = await browser.newPage();
 
-    await page.goto(url)
-    await page.waitForLoadState('networkidle')
+    await page.goto(url);
+    await page.waitForLoadState("networkidle");
 
     const analysis = await page.evaluate(() => {
       // DOM Analyse
-      const colors = extractColors()
-      const fonts = extractFonts()
-      const logo = findLogo()
+      const colors = extractColors();
+      const fonts = extractFonts();
+      const logo = findLogo();
 
-      return { colors, fonts, logo }
-    })
+      return { colors, fonts, logo };
+    });
 
-    await browser.close()
-    return analysis
+    await browser.close();
+    return analysis;
   }
 }
 ```
@@ -173,20 +184,20 @@ class WebsiteAnalyzer {
 
 ```typescript
 function extractColors(): ColorPalette {
-  const elements = document.querySelectorAll('*')
-  const colorCounts: Map<string, number> = new Map()
+  const elements = document.querySelectorAll("*");
+  const colorCounts: Map<string, number> = new Map();
 
-  elements.forEach(el => {
-    const styles = window.getComputedStyle(el)
-    const color = styles.color
-    const backgroundColor = styles.backgroundColor
+  elements.forEach((el) => {
+    const styles = window.getComputedStyle(el);
+    const color = styles.color;
+    const backgroundColor = styles.backgroundColor;
 
     // Color frequency analysis
-    incrementColor(color)
-    incrementColor(backgroundColor)
-  })
+    incrementColor(color);
+    incrementColor(backgroundColor);
+  });
 
-  return generatePalette(colorCounts)
+  return generatePalette(colorCounts);
 }
 ```
 
@@ -197,17 +208,17 @@ class TemplateGenerator {
   async createTemplate(branding: ExtractedBranding): Promise<string> {
     const presentation = await slides.presentations.create({
       requestBody: {
-        title: `${branding.brandName} Template`
-      }
-    })
+        title: `${branding.brandName} Template`,
+      },
+    });
 
     // Apply branding theme
-    await this.applyBranding(presentation.data.presentationId!, branding)
+    await this.applyBranding(presentation.data.presentationId!, branding);
 
     // Create layouts
-    await this.createLayouts(presentation.data.presentationId!)
+    await this.createLayouts(presentation.data.presentationId!);
 
-    return presentation.data.presentationId!
+    return presentation.data.presentationId!;
   }
 }
 ```
@@ -217,6 +228,7 @@ class TemplateGenerator {
 ### Template Management Dashboard
 
 **Features:**
+
 - Website URL Input Feld
 - Analyse Progress Anzeige
 - Template Preview
@@ -224,6 +236,7 @@ class TemplateGenerator {
 - Publish Controls
 
 **UI Components:**
+
 - URL Input mit Validation
 - Progress Bar für Analyse
 - Color Picker für Branding Anpassung
@@ -262,11 +275,13 @@ class TemplateGenerator {
 ## Sicherheit & Compliance
 
 ### Data Privacy
+
 - Keine Speicherung sensibler Website-Daten
 - Temporäre Analyse-Ergebnisse
 - Secure API Communication
 
 ### Rate Limiting
+
 - Website Analyse: 10/minute pro User
 - Template Generierung: 5/minute pro User
 - Google API Quotas berücksichtigen
@@ -274,12 +289,14 @@ class TemplateGenerator {
 ## Monitoring & Analytics
 
 ### Metrics
+
 - Analyse Success Rate
 - Template Generation Time
 - User Engagement
 - Error Rates
 
 ### Logging
+
 - Structured Logging für alle Operationen
 - Error Tracking mit Stack Traces
 - Performance Monitoring
@@ -288,6 +305,7 @@ class TemplateGenerator {
 ## Erweiterungen
 
 ### Zukünftige Features
+
 - Multi-Page Website Analyse
 - Brand Guideline PDF Generation
 - Template Versionierung
@@ -295,6 +313,7 @@ class TemplateGenerator {
 - Advanced AI Branding Analysis
 
 ### Integrationen
+
 - Adobe Creative Cloud
 - Figma Design System
 - Brand Monitoring Tools

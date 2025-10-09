@@ -23,12 +23,14 @@ Eine Next.js-basierte Webanwendung zur automatischen Generierung professioneller
 ## Installation
 
 1. **Repository klonen**
+
    ```bash
    git clone <repository-url>
    cd ai-slides-generator
    ```
 
 2. **Dependencies installieren**
+
    ```bash
    npm install
    ```
@@ -51,6 +53,7 @@ Eine Next.js-basierte Webanwendung zur automatischen Generierung professioneller
    ```
 
 4. **Entwicklungsserver starten**
+
    ```bash
    npm run dev
    ```
@@ -62,65 +65,68 @@ Eine Next.js-basierte Webanwendung zur automatischen Generierung professioneller
 ### OAuth 2.0 Konfiguration
 
 1. **Google Cloud Project erstellen**
-    - Gehe zu [Google Cloud Console](https://console.cloud.google.com/)
-    - Erstelle ein neues Projekt oder verwende ein bestehendes
+   - Gehe zu [Google Cloud Console](https://console.cloud.google.com/)
+   - Erstelle ein neues Projekt oder verwende ein bestehendes
 
 2. **APIs aktivieren**
-    - Gehe zu "APIs & Services" > "Library"
-    - Aktiviere: **Google Slides API** und **Google Drive API**
+   - Gehe zu "APIs & Services" > "Library"
+   - Aktiviere: **Google Slides API** und **Google Drive API**
 
 3. **OAuth 2.0 Credentials erstellen**
-    - Gehe zu "APIs & Services" > "Credentials"
-    - Klicke "Create Credentials" > "OAuth 2.0 Client IDs"
-    - Wähle "Web application" als Application type
-    - Füge Authorized redirect URIs hinzu:
-      - `http://localhost:3000/api/auth/callback` (für Entwicklung)
-      - `https://yourdomain.com/api/auth/callback` (für Produktion)
+   - Gehe zu "APIs & Services" > "Credentials"
+   - Klicke "Create Credentials" > "OAuth 2.0 Client IDs"
+   - Wähle "Web application" als Application type
+   - Füge Authorized redirect URIs hinzu:
+     - `http://localhost:3000/api/auth/callback` (für Entwicklung)
+     - `https://yourdomain.com/api/auth/callback` (für Produktion)
 
 4. **Environment Variables setzen**
-    ```env
-    # Google OAuth (für User-Authentifizierung)
-    GOOGLE_CLIENT_ID=your-oauth-client-id.apps.googleusercontent.com
-    GOOGLE_CLIENT_SECRET=your-oauth-client-secret
 
-    # App Configuration
-    NEXT_PUBLIC_APP_URL=http://localhost:3000
-    ```
+   ```env
+   # Google OAuth (für User-Authentifizierung)
+   GOOGLE_CLIENT_ID=your-oauth-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-oauth-client-secret
+
+   # App Configuration
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
 
 ### Template Setup
 
 1. **Google Slides Template erstellen**
-    - Erstelle eine neue Präsentation in Google Slides
-    - Füge Platzhalter-Text hinzu (wird durch KI-Inhalte ersetzt)
-    - Notiere die Presentation ID aus der URL
+   - Erstelle eine neue Präsentation in Google Slides
+   - Füge Platzhalter-Text hinzu (wird durch KI-Inhalte ersetzt)
+   - Notiere die Presentation ID aus der URL
 
 2. **Template ID konfigurieren**
-    - Aktualisiere `src/app/api/create-presentation/route.ts`
-    - Setze die korrekte `templateId` für dein Template
+   - Aktualisiere `src/app/api/create-presentation/route.ts`
+   - Setze die korrekte `templateId` für dein Template
 
 ## 🎯 Verwendung
 
 ### Schnellstart
 
 1. **App starten**
-    ```bash
-    npm run dev
-    ```
-    Öffne [http://localhost:3000](http://localhost:3000)
+
+   ```bash
+   npm run dev
+   ```
+
+   Öffne [http://localhost:3000](http://localhost:3000)
 
 2. **Google Login**
-    - Klicke "Mit Google anmelden"
-    - Erlaube Zugriff auf Google Drive und Slides
+   - Klicke "Mit Google anmelden"
+   - Erlaube Zugriff auf Google Drive und Slides
 
 3. **Präsentation erstellen**
-    - Gib dein Thema ein (z.B. "KI in der Bildung")
-    - Wähle Business-Stil
-    - Klicke "Präsentation generieren"
+   - Gib dein Thema ein (z.B. "KI in der Bildung")
+   - Wähle Business-Stil
+   - Klicke "Präsentation generieren"
 
 4. **Google Slides erstellen**
-    - Überprüfe die Vorschau
-    - Klicke "Google Slides erstellen"
-    - Bearbeite die Präsentation direkt in Google Slides
+   - Überprüfe die Vorschau
+   - Klicke "Google Slides erstellen"
+   - Bearbeite die Präsentation direkt in Google Slides
 
 ### Erweiterte Features
 
@@ -155,21 +161,25 @@ src/
 ## 🚀 API Endpoints
 
 ### Authentifizierung
+
 - `GET /api/auth/login` - OAuth Login initiieren
 - `GET /api/auth/callback` - OAuth Token austauschen
 - `GET /api/auth/logout` - User ausloggen
 - `GET /api/auth/status` - Login-Status prüfen
 
 ### Präsentationsgenerierung
+
 - `POST /api/generate-json` - KI-generierte Präsentation erstellen
 - `POST /api/create-presentation` - Google Slides Präsentation erstellen
 - `POST /api/generate-template` - Website-basierte Templates generieren
 
 ### Verwaltung
+
 - `GET /api/templates` - Verfügbare Templates abrufen
 - `GET /api/export/:id/:format` - Export als PDF/PPTX
 
 ### Test-Endpunkte
+
 - `GET /api/test-slides` - Google Slides API testen
 - `GET /api/test-presentation-access` - Präsentationszugriff testen
 - `GET /api/analyze-template` - Template-Struktur analysieren
@@ -181,13 +191,16 @@ src/
 - `npm run dev` - Entwicklungsserver
 - `npm run build` - Produktionsbuild
 - `npm run start` - Produktionsserver
-- `npm run lint` - ESLint
+- `npm run lint` - ESLint Code-Qualitätsprüfung
+- `npx playwright test` - E2E Tests ausführen
+- `npx playwright show-report` - Test-Report anzeigen
 
 ### Code Quality
 
 - **TypeScript**: Strict Type Checking
-- **ESLint**: Code Linting
-- **Prettier**: Code Formatting (über ESLint)
+- **ESLint**: Code Linting mit Next.js Standards
+- **Prettier**: Automatische Code-Formatierung
+- **Playwright**: End-to-End Testing Suite
 
 ## Deployment
 
@@ -224,5 +237,6 @@ Die App kann auf jeder Node.js-kompatiblen Platform deployed werden.
 ## Support
 
 Bei Fragen oder Problemen:
+
 - Öffne ein Issue im Repository
 - Kontaktiere das Entwicklungsteam

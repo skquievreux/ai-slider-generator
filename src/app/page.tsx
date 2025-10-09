@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { PresentationForm } from '@/components/PresentationForm'
-import { SlidePreview } from '@/components/SlidePreview'
-import { ExportButtons } from '@/components/ExportButtons'
-import { LoadingIndicator } from '@/components/LoadingIndicator'
-import GoogleLogin from '@/components/GoogleLogin'
-import { usePresentationStore } from '@/lib/store'
+import { PresentationForm } from "@/components/PresentationForm";
+import { SlidePreview } from "@/components/SlidePreview";
+import { ExportButtons } from "@/components/ExportButtons";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
+import GoogleLogin from "@/components/GoogleLogin";
+import { usePresentationStore } from "@/lib/store";
 
 export default function Home() {
-  const { isGenerating, generatedSlides } = usePresentationStore()
+  const { isGenerating, generatedSlides } = usePresentationStore();
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -19,11 +19,12 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           AI Slides Generator
           <span className="ml-4 text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">
-            v1.0.0
+            v1.0.1
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Erstellen Sie professionelle Präsentationen in wenigen Minuten mit KI-Unterstützung
+          Erstellen Sie professionelle Präsentationen in wenigen Minuten mit
+          KI-Unterstützung
         </p>
       </header>
 
@@ -43,5 +44,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 {
   "name": "ai-slider-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -25,5 +25,8 @@
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
     "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
   }
 }
