@@ -226,18 +226,18 @@ async function createContentSlides(
     {
       title: "{{SLIDE_TITLE_1}}",
       content: "{{CONTENT_1}}\n\n{{CONTENT_1_DETAIL}}",
-      layout: "title_body"
+      layout: "title_body",
     },
     {
       title: "{{SLIDE_TITLE_2}}",
       content: "{{CONTENT_2}}",
-      layout: "title_only"
+      layout: "title_only",
     },
     {
       title: "{{SLIDE_TITLE_3}}",
       content: "{{CONTENT_3}}\n\n• {{POINT_1}}\n• {{POINT_2}}\n• {{POINT_3}}",
-      layout: "title_body"
-    }
+      layout: "title_body",
+    },
   ];
 
   for (const config of slideConfigs) {

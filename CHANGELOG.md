@@ -5,32 +5,69 @@ Alle wichtigen Änderungen an AI Slides Generator werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-10
+
+### ✨ Added
+
+- **Enhanced Template System**: Verbesserte Template-Verarbeitung mit robusterer Platzhalter-Erkennung
+- **Improved Error Handling**: Bessere Fehlerbehandlung in Präsentationserstellung
+- **Code Quality Improvements**: Automatische Code-Formatierung und Linting
+
+### 🔄 Changed
+
+- **Next.js Security Update**: Aktualisierung auf Next.js 14.2.33 für kritische Sicherheitslücken
+- **Dependency Updates**: Aktualisierung veralteter Pakete für bessere Kompatibilität
+- **TypeScript Improvements**: Strengere Typisierung und Fehlerbehebung
+
+### 🐛 Fixed
+
+- **TypeScript Errors**: Behebung impliziter 'any' Typen in API-Routen
+- **Test Compatibility**: Aktualisierung von Tests für neue Version
+- **Code Formatting**: Konsistente Formatierung aller Dateien
+
+### 🔧 Technical Improvements
+
+- **Build Process**: Optimierter Build-Prozess mit verbesserter Fehlerbehandlung
+- **Code Quality**: Integration von Prettier und ESLint für konsistenten Code-Stil
+- **Performance**: Verbesserte Build-Zeiten und Optimierungen
+
 ## [1.0.4] - 2025-10-09
 
 ### ✨ Added
+
 - **Template System Integration**: Präsentationen verwenden jetzt ausgewählte Templates
 - **Placeholder Replacement**: Templates mit Platzhaltern werden durch echten Content ersetzt
 - **Template vs Blank Mode**: Automatische Erkennung von Template- oder Blank-Präsentationen
 
 ### 🔄 Changed
+
 - **Presentation Creation**: Template-Kopien mit anschließender Content-Ersetzung
 - **Dual Mode Support**: Templates werden kopiert, Blank-Präsentationen werden erstellt
 - **Content Replacement**: Intelligente Platzhalter-Erkennung ({{TITLE}}, {{CONTENT}}, etc.)
 
 ### 🏗️ Technical
+
 - **Template Processing**: replaceTemplatePlaceholders() für Template-basierte Präsentationen
 - **Fallback Creation**: createBlankPresentationContent() für Template-lose Präsentationen
 - **Content Mapping**: Automatische Zuordnung von Slides zu Template-Platzhaltern
 
+## [1.0.5] - 2025-10-10
+
+### 🐛 Fixed
+
+- Kleine Bugfixes und Verbesserungen
+
 ## [1.0.1] - 2025-10-09
 
 ### 🐛 Fixed
+
 - **Code Quality**: ESLint und Prettier Konfiguration hinzugefügt
 - **Code Formatting**: Alle Dateien mit Prettier formatiert
 - **TypeScript**: Linting-Regeln für bessere Code-Qualität
 - **Documentation**: Markdown-Dateien konsistent formatiert
 
 ### 📚 Documentation
+
 - **Code Standards**: Prettier und ESLint Regeln dokumentiert
 - **Development Setup**: Code-Qualität-Tools hinzugefügt
 

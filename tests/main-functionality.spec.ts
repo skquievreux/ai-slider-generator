@@ -12,7 +12,7 @@ test.describe("AI Slides Generator - Hauptfunktionalität", () => {
     // Check page title and main elements
     await expect(page).toHaveTitle(/AI Slides Generator/);
     await expect(page.locator("h1")).toContainText("AI Slides Generator");
-    await expect(page.locator("h1")).toContainText("v1.0.0");
+    await expect(page.locator("h1")).toContainText("v1.0.4");
 
     // Check main form elements
     await expect(
@@ -42,6 +42,7 @@ test.describe("AI Slides Generator - Hauptfunktionalität", () => {
     await page
       .locator('textarea[placeholder*="Präsentationsthema"]')
       .fill("Test Thema");
+    await page.waitForTimeout(500);
     await expect(submitButton).toBeEnabled();
 
     // Clear textarea and check if button becomes disabled again

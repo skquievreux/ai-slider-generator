@@ -1,0 +1,59 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+    - main [ref=e2]:
+        - generic [ref=e3]:
+            - generic [ref=e4]:
+                - button "Mit Google anmelden" [ref=e6] [cursor=pointer]:
+                    - img [ref=e7]
+                    - text: Mit Google anmelden
+                - heading "AI Slides Generatorv1.0.4" [level=1] [ref=e12]
+                - paragraph [ref=e13]: Erstellen Sie professionelle Präsentationen in wenigen Minuten mit KI-Unterstützung
+            - generic [ref=e16]:
+                - heading "Präsentation erstellen" [level=2] [ref=e17]
+                - generic [ref=e18]:
+                    - generic [ref=e19]:
+                        - generic [ref=e20]: Präsentationsthema *
+                        - textbox "Präsentationsthema *" [active] [ref=e21]:
+                            - /placeholder: Beschreiben Sie Ihr Präsentationsthema...
+                            - text: Test Thema
+                    - generic [ref=e22]:
+                        - generic [ref=e23]:
+                            - generic [ref=e24]: Anzahl Folien
+                            - combobox "Anzahl Folien" [ref=e25]:
+                                - option "5 Folien" [selected]
+                                - option "6 Folien"
+                                - option "7 Folien"
+                                - option "8 Folien"
+                                - option "9 Folien"
+                                - option "10 Folien"
+                                - option "11 Folien"
+                                - option "12 Folien"
+                                - option "13 Folien"
+                                - option "14 Folien"
+                                - option "15 Folien"
+                                - option "16 Folien"
+                                - option "17 Folien"
+                                - option "18 Folien"
+                                - option "19 Folien"
+                                - option "20 Folien"
+                                - option "21 Folien"
+                                - option "22 Folien"
+                                - option "23 Folien"
+                                - option "24 Folien"
+                                - option "25 Folien"
+                        - generic [ref=e26]:
+                            - generic [ref=e27]: Stil
+                            - combobox "Stil" [ref=e28]:
+                                - option "Business" [selected]
+                                - option "Pitch Deck"
+                                - option "Report"
+                                - option "Education"
+                    - generic [ref=e29]:
+                        - generic [ref=e30]: Corporate Design Template
+                        - combobox "Corporate Design Template" [ref=e31]:
+                            - option "Techeroes Modern" [selected]
+                    - button "Präsentation generieren" [disabled] [ref=e32]
+    - alert [ref=e34]
+```

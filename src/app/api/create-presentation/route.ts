@@ -94,7 +94,9 @@ export async function POST(request: NextRequest) {
         const { slides } = await createUserGoogleServices();
         // Note: Google Slides API doesn't have a direct delete method
         // The presentation will remain but can be manually deleted by the user
-        console.log("🗑️ Presentation creation failed, presentation remains for manual cleanup");
+        console.log(
+          "🗑️ Presentation creation failed, presentation remains for manual cleanup",
+        );
       } catch (cleanupError) {
         console.error("Failed to cleanup presentation:", cleanupError);
       }
@@ -138,7 +140,7 @@ export async function POST(request: NextRequest) {
 async function replaceTemplatePlaceholders(
   slides: any,
   presentationId: string,
-  slidesData: Slide[]
+  slidesData: Slide[],
 ) {
   // Get presentation structure
   const presentation = await slides.presentations.get({
@@ -154,18 +156,18 @@ async function replaceTemplatePlaceholders(
   const requests: any[] = [];
 
   // For each slide, find text elements and replace placeholders
-  existingSlides.forEach((slide, slideIndex) => {
+  existingSlides.forEach((slide: any, slideIndex: any) => {
     const slideData = slidesData[slideIndex];
     if (!slideData) return;
 
     const pageElements = slide.pageElements || [];
 
-    pageElements.forEach((element) => {
+    pageElements.forEach((element: any) => {
       if (element.shape?.text?.textElements) {
         const textElements = element.shape.text.textElements;
         const currentText = textElements
-          .map(te => te.textRun?.content || '')
-          .join('');
+          .map((te: any) => te.textRun?.content || "")
+          .join("");
 
         // Replace placeholders with actual content
         let newText = currentText;
@@ -173,13 +175,16 @@ async function replaceTemplatePlaceholders(
         // Replace title placeholder
         if (slideData.content.title) {
           newText = newText.replace(/\{\{TITLE\}\}/g, slideData.content.title);
-          newText = newText.replace(/\{\{SLIDE_TITLE_\d+\}\}/g, slideData.content.title);
+          newText = newText.replace(
+            /\{\{SLIDE_TITLE_\d+\}\}/g,
+            slideData.content.title,
+          );
         }
 
         // Replace content placeholders
         if (slideData.content.body) {
           const bodyText = Array.isArray(slideData.content.body)
-            ? slideData.content.body.join('\n\n')
+            ? slideData.content.body.join("\n\n")
             : slideData.content.body;
 
           newText = newText.replace(/\{\{CONTENT\}\}/g, bodyText);
@@ -223,7 +228,7 @@ async function replaceTemplatePlaceholders(
 async function createBlankPresentationContent(
   slides: any,
   presentationId: string,
-  slidesData: Slide[]
+  slidesData: Slide[],
 ) {
   // Create slides and content from scratch (fallback for when no template is used)
   const allRequests: any[] = [];
@@ -249,7 +254,7 @@ async function createBlankPresentationContent(
   const createdSlides = slideBatchResult.data.replies || [];
   const slideIds: string[] = [];
 
-  createdSlides.forEach((reply, index) => {
+  createdSlides.forEach((reply: any, index: any) => {
     if (reply.createSlide?.objectId) {
       slideIds.push(reply.createSlide.objectId);
     }
@@ -266,8 +271,8 @@ async function createBlankPresentationContent(
 
     const slideTitle = slide.content.title || `Slide ${index + 1}`;
     const slideContent = Array.isArray(slide.content.body)
-      ? slide.content.body.filter(item => item && item.trim()).join('\n\n')
-      : slide.content.body || '';
+      ? slide.content.body.filter((item) => item && item.trim()).join("\n\n")
+      : slide.content.body || "";
 
     // Create title text box
     contentRequests.push({

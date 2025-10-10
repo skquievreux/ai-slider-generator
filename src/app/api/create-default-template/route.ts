@@ -20,18 +20,18 @@ export async function POST() {
       {
         title: "{{TITLE}}",
         content: "{{CONTENT}}",
-        yOffset: 120
+        yOffset: 120,
       },
       {
         title: "{{SLIDE_TITLE_1}}",
         content: "{{CONTENT_1}}",
-        yOffset: 120
+        yOffset: 120,
       },
       {
         title: "{{SLIDE_TITLE_2}}",
         content: "{{CONTENT_2}}",
-        yOffset: 120
-      }
+        yOffset: 120,
+      },
     ];
 
     for (const config of slideConfigs) {

@@ -1,24 +1,26 @@
-# AI Slides Generator v1.0.0
+# AI Slides Generator v1.1.0
 
 Eine Next.js-basierte Webanwendung zur automatischen Generierung professioneller, gebrandeter Präsentationen aus Themenvorgaben mittels KI.
 
 ## ✨ Features
 
 - 🤖 **KI-gestützte Präsentationsgenerierung** mit OpenAI GPT-4
-- 🎨 **Corporate Design Templates** (z.B. Techeroes Modern)
+- 🎨 **Enhanced Template System** mit robuster Platzhalter-Erkennung
 - 📊 **Automatische Folienstrukturierung** mit 5 optimierten Folien
 - ☁️ **Nahtlose Google Slides Integration** mit User OAuth
 - 📄 **Direkter Export** zu Google Slides
 - 🎯 **Responsive Web-Interface** mit Live-Vorschau
 - 🔐 **Sichere Authentifizierung** mit Google OAuth 2.0
 - 📱 **Mobile-optimierte Benutzeroberfläche**
+- 🛡️ **Verbesserte Fehlerbehandlung** und Code-Qualität
 
 ## Technologie-Stack
 
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Zustand
+- **Frontend**: Next.js 14.2.33, TypeScript, Tailwind CSS, Zustand
 - **Backend**: Next.js API Routes
 - **APIs**: OpenAI GPT-4, Google Slides API, Google Drive API
 - **Styling**: Tailwind CSS mit custom Components
+- **Quality**: ESLint, Prettier, Playwright E2E Testing
 
 ## Installation
 
