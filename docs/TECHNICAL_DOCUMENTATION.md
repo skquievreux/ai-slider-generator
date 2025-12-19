@@ -26,9 +26,11 @@ graph TD
 
 ## 2. Technologie-Stack
 
-*   **Framework**: Next.js 14 (App Router)
-*   **Sprache**: TypeScript
+*   **Framework**: Next.js 16 (App Router)
+*   **Sprache**: TypeScript (Strict Mode)
 *   **Styling**: Tailwind CSS
+*   **Datenbank**: SQLite (via Prisma ORM) - *Migration zu Supabase PostgreSQL vorbereitet*
+*   **ORM**: Prisma Client v5
 *   **State Management**: Zustand
 *   **AI Integration**: OpenAI API (GPT-4-Turbo in JSON Mode)
 *   **Google Integration**: Googleapis (Slides v1, Drive v3)
@@ -36,7 +38,13 @@ graph TD
 
 ## 3. Kern-Komponenten
 
-### 3.1 Authentifizierung (`src/lib/user-auth.ts`)
+### 3.1 Datenbank & ORM (`src/lib/db.ts`)
+Die Anwendung nutzt Prisma als ORM.
+*   **Modelle**: `User` und `Presentation`.
+*   **Singleton**: Der Prisma Client wird als Singleton instanziiert, um Connection-Limit-Probleme im Dev-Mode zu vermeiden.
+*   **Speicherort**: Lokal in `./dev.db` (SQLite).
+
+### 3.2 Authentifizierung (`src/lib/user-auth.ts`)
 Die Anwendung nutzt einen manuellen OAuth2-Flow. Tokens (Access & Refresh) werden in HttpOnly-Cookies gespeichert.
 *   **Wichtig**: Der `getUserAuth()` Helper instantiiert den Google OAuth2 Client für jeden Request neu basierend auf den Cookies.
 

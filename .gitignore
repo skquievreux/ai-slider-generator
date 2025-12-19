@@ -40,3 +40,7 @@ next-env.d.ts
 .vscode/
 .roo/
 .idea/
+
+# sqlite
+*.db
+*.db-journal
