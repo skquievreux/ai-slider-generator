@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePresentationStore } from "@/lib/store";
 
 export function ExportButtons() {
-  const { generatedSlides, exportUrls, setExportUrls } = usePresentationStore();
+  const { generatedSlides, exportUrls, setExportUrls, formData } = usePresentationStore();
   const [isExporting, setIsExporting] = useState<string | null>(null);
 
   if (generatedSlides.length === 0) return null;
@@ -17,7 +17,12 @@ export function ExportButtons() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ slides: generatedSlides }),
+        body: JSON.stringify({
+          slides: generatedSlides,
+          topic: formData.topic,
+          style: formData.style,
+          startSlideIndex: 0 // Optional future proofing
+        }),
       });
 
       if (!response.ok) {

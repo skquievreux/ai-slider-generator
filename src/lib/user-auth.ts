@@ -7,7 +7,7 @@ import { OAuth2Client } from "google-auth-library";
  * Based on Google APIs documentation for OAuth2 authentication
  */
 export async function getUserAuth(): Promise<OAuth2Client> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get("google_access_token")?.value;
   const refreshToken = cookieStore.get("google_refresh_token")?.value;
 
@@ -64,4 +64,14 @@ export async function createUserGoogleServices() {
     console.error("Failed to create Google services:", error);
     throw new Error("Authentication failed. Please log in again.");
   }
+}
+
+/**
+ * Get current user info from Google
+ */
+export async function getUserInfo() {
+  const auth = await getUserAuth();
+  const oauth2 = google.oauth2({ version: "v2", auth });
+  const { data } = await oauth2.userinfo.get();
+  return data;
 }

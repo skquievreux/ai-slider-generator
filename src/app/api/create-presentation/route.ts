@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Slide } from "@/types";
-import { createUserGoogleServices } from "@/lib/user-auth";
+import { createUserGoogleServices, getUserInfo } from "@/lib/user-auth";
+import { prisma } from "@/lib/db";
 import { GaxiosError } from "gaxios";
 
 interface CreatePresentationRequest {
   slides: Slide[];
   templateId?: string;
+  topic?: string;
+  style?: string;
 }
 
 /**
@@ -14,6 +17,7 @@ interface CreatePresentationRequest {
  */
 export async function POST(request: NextRequest) {
   let presentationId: string | null = null;
+  let googleSlidesUrl: string | null = null;
 
   try {
     // Parse and validate request body
@@ -32,6 +36,27 @@ export async function POST(request: NextRequest) {
 
     // Authenticate user and create API clients
     const { slides, drive } = await createUserGoogleServices();
+
+    // Get User Info for DB
+    let userId: string | null = null;
+    try {
+      const userInfo = await getUserInfo();
+      if (userInfo?.email) {
+        // Upsert user
+        const user = await prisma.user.upsert({
+          where: { email: userInfo.email },
+          update: { name: userInfo.name },
+          create: {
+            email: userInfo.email,
+            name: userInfo.name
+          }
+        });
+        userId = user.id;
+      }
+    } catch (authError) {
+      console.warn("Could not fetch user info for DB record:", authError);
+      // We continue without linking to a user if this fails, to avoid breaking the core feature
+    }
 
     // Step 1: Copy template if specified, otherwise create blank presentation
     if (body.templateId) {
@@ -77,7 +102,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 5: Generate Google Slides URL
-    const googleSlidesUrl = `https://docs.google.com/presentation/d/${presentationId}/edit`;
+    googleSlidesUrl = `https://docs.google.com/presentation/d/${presentationId}/edit`;
+
+    // Save to Database
+    if (presentationId) {
+      try {
+        await prisma.presentation.create({
+          data: {
+            title: body.slides[0]?.content.title || "Untitled Presentation",
+            topic: body.topic || "Unknown",
+            style: body.style || "Default",
+            slideCount: body.slides.length,
+            googleId: presentationId,
+            content: JSON.stringify(body.slides), // Store full JSON structure
+            userId: userId
+          }
+        });
+        console.log("✅ Presentation record saved to DB");
+      } catch (dbError) {
+        console.error("❌ Failed to save presentation to DB:", dbError);
+        // Don't fail the request if DB save fails, user still has their slides
+      }
+    }
 
     return NextResponse.json({
       success: true,
