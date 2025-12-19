@@ -15,93 +15,80 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Topic is required" }, { status: 400 });
     }
 
-    if (body.slideCount < 5 || body.slideCount > 30) {
+    if (body.slideCount < 1 || body.slideCount > 50) {
       return NextResponse.json(
-        { error: "Slide count must be between 5 and 30" },
+        { error: "Slide count must be between 1 and 50" },
         { status: 400 },
       );
     }
 
     // Generate presentation using OpenAI
-    const prompt = `Erstelle eine strukturierte Präsentation zum Thema "${body.topic}" im Stil "${body.style}".
+    const systemPrompt = `Du bist ein professioneller Präsentations-Designer.
+Deine Aufgabe ist es, eine Struktur für eine Präsentation zu erstellen.
+Antworte AUSSCHLIESSLICH mit validem JSON.
+Halte dich strikt an das angeforderte Schema.`;
 
-Anforderungen:
-- Genau ${body.slideCount} Folien
-- Jede Folie muss einen Titel haben
-- Inhalt sollte als Bullet Points strukturiert sein
-- Verwende professionelle, prägnante Sprache
+    const userPrompt = `Erstelle eine Präsentation zum Thema "${body.topic}" im Stil "${body.style}".
+Anzahl der Folien: ${body.slideCount}
 
-Gib das Ergebnis als JSON zurück mit dieser Struktur:
+Das JSON muss exakt diesem Schema folgen:
 {
-  "title": "Präsentationstitel",
+  "title": "Titel der Präsentation",
   "theme": "${body.style}",
   "slides": [
     {
       "id": "slide_1",
-      "type": "title|content|image|chart|big_number",
-      "layout": "TITLE_SLIDE|TITLE_AND_BODY|TITLE_AND_TWO_COLUMNS|etc.",
+      "type": "title|content",
+      "layout": "TITLE_SLIDE|TITLE_AND_BODY",
       "content": {
-        "title": "Foliendertitel",
-        "body": ["Bullet Point 1", "Bullet Point 2", "Bullet Point 3"]
+        "title": "Folien-Überschrift",
+        "body": ["Punkt 1", "Punkt 2", "Punkt 3"]
       }
     }
   ]
 }
 
-Stelle sicher, dass die erste Folie eine Titel-Folie ist und die letzte eine Zusammenfassung.
+Regeln:
+1. Die erste Folie MUSS layout="TITLE_SLIDE" haben.
+2. Die anderen Folien sollen layout="TITLE_AND_BODY" haben.
+3. Der Inhalt (body) soll aus kurzen, prägnanten Stichpunkten bestehen (Array of Strings).
+4. Generiere exakt ${body.slideCount} Folien.`;
 
-WICHTIG: Gib NUR das JSON zurück, keine zusätzlichen Erklärungen oder Formatierungen!`;
-
-    console.log("Sending prompt to OpenAI:", prompt);
+    console.log("Sending prompt to OpenAI...");
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4-turbo",
+      response_format: { type: "json_object" },
       messages: [
-        {
-          role: "system",
-          content:
-            "Du bist ein Experte für die Erstellung professioneller Präsentationen. Gib immer gültiges JSON zurück. Antworte nur mit dem JSON, keine zusätzlichen Texte.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 4000,
     });
 
     const content = completion.choices[0]?.message?.content;
-    console.log("OpenAI response:", content);
-
+    
     if (!content) {
       throw new Error("No content received from OpenAI");
     }
 
-    // Try to parse JSON, handle potential formatting issues
+    console.log("OpenAI response received");
+
+    // Parse JSON safely
     let presentation: Presentation;
     try {
-      // Remove potential markdown code blocks
-      const cleanContent = content.replace(/```json\n?|\n?```/g, "").trim();
-      presentation = JSON.parse(cleanContent);
-      console.log("Successfully parsed presentation:", presentation);
+      presentation = JSON.parse(content);
+      
+      // Basic validation of the structure
+      if (!presentation.slides || !Array.isArray(presentation.slides)) {
+        throw new Error("Invalid JSON structure: 'slides' array missing");
+      }
+      
+      console.log(`Successfully parsed presentation with ${presentation.slides.length} slides`);
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
       console.error("Raw content:", content);
-
-      // Fallback: try to extract JSON from the response
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          presentation = JSON.parse(jsonMatch[0]);
-          console.log("Fallback parsing successful:", presentation);
-        } catch (fallbackError) {
-          console.error("Fallback parsing failed:", fallbackError);
-          throw new Error("Failed to parse OpenAI response as JSON");
-        }
-      } else {
-        throw new Error("No JSON found in OpenAI response");
-      }
+      throw new Error("Failed to parse valid JSON from OpenAI response");
     }
 
     return NextResponse.json(presentation);

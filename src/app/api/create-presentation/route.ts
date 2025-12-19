@@ -155,73 +155,105 @@ async function replaceTemplatePlaceholders(
 
   const requests: any[] = [];
 
-  // For each slide, find text elements and replace placeholders
-  existingSlides.forEach((slide: any, slideIndex: any) => {
-    const slideData = slidesData[slideIndex];
-    if (!slideData) return;
+  // Strategy: 
+  // 1. Map requested slides to existing slides.
+  // 2. If we need more slides than available, duplicate the last "content" slide (usually index 1, as 0 is title).
+  // 3. Perform text replacements on the mapped/created slides.
 
-    const pageElements = slide.pageElements || [];
+  // Determine the template slide to duplicate for extra content (default to 2nd slide or last slide)
+  // Assuming 0 is Title, 1 is Content. If only 1 slide, use 0.
+  const templateSlideToCloneId = existingSlides.length > 1
+    ? existingSlides[1].objectId
+    : existingSlides[0].objectId;
 
-    pageElements.forEach((element: any) => {
-      if (element.shape?.text?.textElements) {
-        const textElements = element.shape.text.textElements;
-        const currentText = textElements
-          .map((te: any) => te.textRun?.content || "")
-          .join("");
+  // Track the ID of the slide we will write to for each requested slide
+  const targetSlideIds: string[] = [];
 
-        // Replace placeholders with actual content
-        let newText = currentText;
+  // 1. Prepare Slide Duplication Requests
+  slidesData.forEach((_, index) => {
+    if (index < existingSlides.length) {
+      // Use existing slide
+      targetSlideIds.push(existingSlides[index].objectId);
+    } else {
+      // Need a new slide
+      const newSlideId = `gen_slide_${Date.now()}_${index}`;
+      targetSlideIds.push(newSlideId);
 
-        // Replace title placeholder
-        if (slideData.content.title) {
-          newText = newText.replace(/\{\{TITLE\}\}/g, slideData.content.title);
-          newText = newText.replace(
-            /\{\{SLIDE_TITLE_\d+\}\}/g,
-            slideData.content.title,
-          );
+      requests.push({
+        duplicateObject: {
+          objectId: templateSlideToCloneId,
+          objectIds: {
+            [templateSlideToCloneId]: newSlideId
+            // Note: If the slide has children (text boxes), we might need to map their IDs too 
+            // if we want to replace text specifically by ID. 
+            // However, replaceAllText works globally or by page. 
+            // "page_object_ids" in replaceAllText restricts scope to specific slides.
+          }
         }
+      });
+    }
+  });
 
-        // Replace content placeholders
-        if (slideData.content.body) {
-          const bodyText = Array.isArray(slideData.content.body)
-            ? slideData.content.body.join("\n\n")
-            : slideData.content.body;
+  // 2. Prepare Text Replacement Requests
+  // Since we don't know the IDs of the elements on the *duplicated* slides easily without a fresh GET,
+  // we will use 'replaceAllText' scoped to specific pageObjectIds.
 
-          newText = newText.replace(/\{\{CONTENT\}\}/g, bodyText);
-          newText = newText.replace(/\{\{CONTENT_\d+\}\}/g, bodyText);
+  slidesData.forEach((slideData, index) => {
+    const targetPageId = targetSlideIds[index];
+
+    // Replace Title
+    if (slideData.content.title) {
+      requests.push({
+        replaceAllText: {
+          containsText: { text: "{{TITLE}}", matchCase: true },
+          replaceText: slideData.content.title,
+          pageObjectIds: [targetPageId]
         }
-
-        // Only update if text actually changed
-        if (newText !== currentText) {
-          requests.push({
-            deleteText: {
-              objectId: element.objectId,
-              textRange: { type: "ALL" },
-            },
-          });
-
-          requests.push({
-            insertText: {
-              objectId: element.objectId,
-              text: newText,
-              insertionIndex: 0,
-            },
-          });
+      });
+      // Also try fallback placeholder
+      requests.push({
+        replaceAllText: {
+          containsText: { text: "{{SLIDE_TITLE}}", matchCase: true },
+          replaceText: slideData.content.title,
+          pageObjectIds: [targetPageId]
         }
-      }
-    });
+      });
+    }
+
+    // Replace Content/Body
+    if (slideData.content.body) {
+      const bodyText = Array.isArray(slideData.content.body)
+        ? slideData.content.body.join("\n")
+        : slideData.content.body;
+
+      requests.push({
+        replaceAllText: {
+          containsText: { text: "{{CONTENT}}", matchCase: true },
+          replaceText: bodyText,
+          pageObjectIds: [targetPageId]
+        }
+      });
+    }
+
+    // Clean up any remaining specific numbered placeholders if they exist in the original template
+    // e.g. {{TITLE_1}}, {{CONTENT_1}} - this is harder to clear dynamically without exact knowledge.
+    // We'll trust the general placeholders for now.
   });
 
   // Execute all replacements in one batch
   if (requests.length > 0) {
-    console.log(`📝 Replacing ${requests.length} placeholder instances...`);
+    console.log(`📝 Executing ${requests.length} operations (duplication + updates)...`);
 
-    await slides.presentations.batchUpdate({
-      presentationId,
-      requestBody: { requests },
-    });
-
-    console.log("✅ Template placeholders replaced successfully");
+    try {
+      await slides.presentations.batchUpdate({
+        presentationId,
+        requestBody: { requests },
+      });
+      console.log("✅ Template processing complete");
+    } catch (e) {
+      console.error("Batch update failed", e);
+      throw e;
+    }
   }
 }
 
