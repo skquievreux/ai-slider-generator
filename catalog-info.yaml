@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ai-slider-generator
+  description: |
+    Dies ist ein Generator für Präsentationen, der ein vorhandenes Template verwendet.
+  annotations:
+    github.com/project-slug: skquievreux/ai-slider-generator
+spec:
+  type: library
+  lifecycle: experimental
+  owner: guests
