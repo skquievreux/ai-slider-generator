@@ -1,9 +1,3 @@
-# ai-slider-generator
+# Documentation
 
-Dies ist ein Generator für Präsentationen, der ein vorhandenes Template verwendet.
-
-## Overview
-This documentation was automatically scaffolded by Backstage.
-
-## Getting Started
-Add your documentation here.
+Welcome to the documentation for AI-SLIDER-GENERATOR.
